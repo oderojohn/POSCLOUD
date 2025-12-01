@@ -158,7 +158,7 @@ if ENVIRONMENT == 'production':
 elif ENVIRONMENT == 'staging':
     DATABASES = {
         'default': dj_database_url.parse(
-            os.environ.get('STAGING_DATABASE_URL', 'postgresql://default:default@localhost:5432/myshop_staging'),
+            os.environ.get('DATABASE_URL', 'postgresql://default:default@localhost:5432/myshop_staging'),
             conn_max_age=600,
             ssl_require=True
         )
