@@ -23,8 +23,19 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-l3=-3j*)d(#jtqqncm77#
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 # Environment-specific settings
+# Read ALLOWED_HOSTS from environment variable if set, otherwise use defaults
+ALLOWED_HOSTS_ENV = os.environ.get('ALLOWED_HOSTS', '')
+if ALLOWED_HOSTS_ENV:
+    ALLOWED_HOSTS = [host.strip() for host in ALLOWED_HOSTS_ENV.split(',') if host.strip()]
+else:
+    if ENVIRONMENT == 'production':
+        ALLOWED_HOSTS = ['.vercel.app', 'your-production-domain.com']
+    elif ENVIRONMENT == 'staging':
+        ALLOWED_HOSTS = ['.vercel.app', 'staging.your-domain.com', 'localhost', '127.0.0.1', '.up.railway.app']
+    else:  # development/local
+        ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.vercel.app']
+
 if ENVIRONMENT == 'production':
-    ALLOWED_HOSTS = ['.vercel.app', 'your-production-domain.com']
     CORS_ALLOWED_ORIGINS = [
         "https://your-production-frontend.com",
         "https://mwambaliquor.netlify.app",
@@ -34,7 +45,6 @@ if ENVIRONMENT == 'production':
         "https://your-production-domain.com",
     ]
 elif ENVIRONMENT == 'staging':
-    ALLOWED_HOSTS = ['.vercel.app', 'staging.your-domain.com', 'localhost', '127.0.0.1']
     CORS_ALLOWED_ORIGINS = [
         "https://staging-frontend.your-domain.com",
         "http://localhost:3000",
@@ -43,15 +53,16 @@ elif ENVIRONMENT == 'staging':
         "http://127.0.0.1:5173",
         "http://localhost:3001",
         "http://192.168.10.219:3001",
+        "https://*.up.railway.app",  # Railway domains
     ]
     CSRF_TRUSTED_ORIGINS = [
         "https://*.vercel.app",
         "https://staging.your-domain.com",
         "http://localhost:8000",
         "http://127.0.0.1:8000",
+        "https://*.up.railway.app",  # Railway domains
     ]
 else:  # development/local
-    ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.vercel.app']
     CORS_ALLOWED_ORIGINS = [
         "http://localhost:3000",
         "http://localhost:5173",
